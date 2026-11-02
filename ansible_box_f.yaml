@@ -49,16 +49,21 @@
     args:
      chdir: /home/user1/hello/
 
-- name: copy
+
+- name: Fetch file from source host to controller
   hosts: db
-  become: yes
-
   tasks:
-  - name: copy from db
-    run_once: yes
-    fetch: src=/home/user1/hello/target/hello-1.0.war dest=buffer/ flat=yes
-    when: db
+   - name: Get file from remote to controller
+     fetch:
+       src: /home/user1/hello/target/hello-1.0.war
+       dest: ./fetched_files/
+       flat: yes
 
-  - name: copy to web
-    copy: src=buffer/hello-1.0.war dest=/var/lib/tomcat9/webapps/
-    when: web
+- name: Distribute file to target hosts
+  hosts: web
+  tasks:
+   - name: Copy fetched file to targets
+     copy:
+      src: ./fetched_files/hello-1.0.war
+      dest: /var/lib/tomcat9/webapps/hello-1.0.war
+      mode: "0644"
