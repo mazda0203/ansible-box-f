@@ -24,39 +24,34 @@
      name: default-jdk
      state: present
 
+  tasks:
   - name:
     apt:
      name: maven
      state: present
 
+  tasks:
   - name:
     apt:
      name: git
      state: present
 
+  tasks:
   - name: Clone Git repository
-    ansible.builtin.git:
+    git:
      repo: https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
      dest: /home/user1
-     version: main
-     force: yes
-     update: yes
 
+  tasks:
   - name: build
-    ansible.builtin.command: mvn clean package
+    command: mvn package
     args:
-    chdir: /home/user1/boxfuse-sample-java-war-hello/
+     chdir: /home/user1/boxfuse-sample-java-war-hello/
 
-  - name: Copy file from constr to web
-    hosts: web
-  - name: Transfer file
-    ansible.posix.synchronize:
-     src: /home/user1/boxfuse-sample-java-war-hello/hello-1.0.war
-     dest: /var/lib/tomcat9/webapps/hello-1.0.war
-    delegate_to: web
-    mode: push
-
-  - name: Verify file on web
-    file:
-     path: /var/lib/tomcat9/webapps/hello-1.0.war
-     state: exists
+  hosts: all
+  become: yes
+  tasks:
+    - name: Copy local config file to remote server
+      copy:
+        src: /home/user1/boxfuse-sample-java-war-hello/hello-1.0.war
+        dest: /var/lib/tomcat9/webapps/hello-1.0.war
