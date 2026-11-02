@@ -42,10 +42,10 @@
      force: yes
      update: yes
 
-  - name:
-    ansible.builtin.command: mvn package
+  - name: build
+    ansible.builtin.command: mvn clean package
+    args:
      chdir: /home/user1/boxfuse-sample-java-war-hello/
-     changed_when: false
 
   - name: Copy file from constr to web
     hosts: web
