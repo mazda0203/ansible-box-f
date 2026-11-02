@@ -27,21 +27,36 @@
   - name:
     apt:
      name: maven
-     stat: present
+     state: present
 
   - name:
     apt:
      name: git
      state: present
 
-  - name: git clone
-    vars:
-     repo_url: "https://github.com/boxfuse/boxfuse-sample-java-war-hello.git"
-     dest_path: "/home/user1"
-
-  - name: Clone the repository
+  - name: Clone Git repository
     ansible.builtin.git:
-     repo: "{{ repo_url }}"
-     dest: "{{ dest_path }}"
+     repo: https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+     dest: /home/user1
+     version: main
+     force: yes
      update: yes
-     depth: 1
+
+  - name:
+    ansible.builtin.command: mvn package
+     chdir: /home/user1/boxfuse-sample-java-war-hello/
+     changed_when: false
+
+  - name: Copy file from constr to web
+    hosts: web
+  - name: Transfer file
+    ansible.posix.synchronize:
+     src: /home/user1/boxfuse-sample-java-war-hello/hello-1.0.war
+     dest: /var/lib/tomcat9/webapps/hello-1.0.war
+    delegate_to: web
+    mode: push
+
+  - name: Verify file on web
+    file:
+     path: /var/lib/tomcat9/webapps/hello-1.0.war
+     state: exists
