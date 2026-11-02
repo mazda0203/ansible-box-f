@@ -1,0 +1,43 @@
+---
+- name: setup web
+  hosts: web
+  become: yes
+
+  tasks:
+  - name:
+    apt:
+     name: tomcat9
+     state: present
+
+  - name: Ensure tomcat9 service is started
+    service:
+     name: tomcat9
+     state: started
+
+  tasks:
+  - name:
+    apt:
+     name: default-jdk
+     state: present
+
+  - name:
+    apt:
+     name: maven
+     stat: present
+
+  - name:
+    apt:
+     name: git
+     state: present
+
+  - name: git clone
+    vars:
+     repo_url: "https://github.com/boxfuse/boxfuse-sample-java-war-hello.git"
+     dest_path: "/home/user1"
+
+  - name: Clone the repository
+    ansible.builtin.git:
+     repo: "{{ repo_url }}"
+     dest: "{{ dest_path }}"
+     update: yes
+     depth: 1
