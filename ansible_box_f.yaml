@@ -45,7 +45,7 @@
   - name: build
     ansible.builtin.command: mvn clean package
     args:
-     chdir: /home/user1/boxfuse-sample-java-war-hello/
+    chdir: /home/user1/boxfuse-sample-java-war-hello/
 
   - name: Copy file from constr to web
     hosts: web
