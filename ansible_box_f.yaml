@@ -48,10 +48,16 @@
     args:
      chdir: /home/user1/boxfuse-sample-java-war-hello/
 
-  hosts: all
+- name: copy
+  hosts: db
   become: yes
+
   tasks:
-    - name: Copy local config file to remote server
-      copy:
-        src: /home/user1/boxfuse-sample-java-war-hello/hello-1.0.war
-        dest: /var/lib/tomcat9/webapps/hello-1.0.war
+  - name: copy from db
+    run_once: yes
+    fetch: src=/home/user1/boxfuse-sample-java-war-hello/hello-1.0.war dest=buffer/ flat=yes
+    when: "{{ inventory_hostname == 'db' }}"
+
+  - name: copy to web
+    copy: src=buffer/hello-1.0.war dest=/var/lib/tomcat9/webapps/
+    when: "{{ inventory_hostname == 'web' }}"
