@@ -4,7 +4,7 @@
   become: yes
 
   tasks:
-  - name:
+  - name: setup tomcat
     apt:
      name: tomcat9
      state: present
@@ -19,36 +19,32 @@
   become: yes
 
   tasks:
-  - name:
+  - name: setup jdk
     apt:
      name: default-jdk
      state: present
 
-  - name: Maven
+  - name: setup Maven
     become: true
     apt:
       name: maven
       state: latest
       update_cache: yes
 
-  tasks:
-  - name:
+  - name: setup git
     apt:
      name: git
      state: present
 
-  tasks:
   - name: Clone Git repository
     git:
      repo: https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
      dest: /home/user1/hello/
 
-  tasks:
-  - name: build
+  - name: build jdk
     command: mvn package
     args:
      chdir: /home/user1/hello/
-
 
 - name: Fetch file from source host to controller
   hosts: db
